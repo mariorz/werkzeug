@@ -357,14 +357,15 @@ class MemcachedCache(BaseCache):
             key = self.key_prefix + key
         self._client.add(key, value, timeout)
 
-    def set(self, key, value, timeout=None):
+    def set(self, key, value, timeout=None, min_compress_len=0):
         if timeout is None:
             timeout = self.default_timeout
         if isinstance(key, unicode):
             key = key.encode('utf-8')
         if self.key_prefix:
             key = self.key_prefix + key
-        self._client.set(key, value, timeout)
+        self._client.set(key, value, timeout, min_compress_len)
+
 
     def get_many(self, *keys):
         d = self.get_dict(*keys)
@@ -463,13 +464,9 @@ class RedisCache(BaseCache):
     .. versionchanged:: 0.8
        This cache backend now properly serializes objects.
 
-    .. versionchanged:: 0.8.3
-       This cache backend now supports password authentication.
-
     :param host: address of the Redis server or an object which API is
                  compatible with the official Python Redis client (redis-py).
-    :param port: port number on which Redis server listens for connections.
-    :param password: password authentication for the Redis server.
+    :param port: port number on which Redis server listens for connections
     :param default_timeout: the default timeout that is used if no timeout is
                             specified on :meth:`~BaseCache.set`.
     :param key_prefix: A prefix that should be added to all keys.
